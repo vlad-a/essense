@@ -1,11 +1,31 @@
 $(document).ready(function () {
+  $(".header-right-info-box__top").on("click", function () {
+    $(".header-right-info__box").toggleClass("active");
+  });
+  $(".header-burger").on("click", function () {
+    $(".header-burger,.header-left__nav,.header-mob-box").toggleClass("active");
+  });
   $(".header-lang__top").on("click", function () {
     $(".header-lang").toggleClass("active");
   });
   $(document).on("click", function (e) {
     // Проверяем, находится ли клик вне header и header-burger
+    if (!$(e.target).closest(".header-right-info__box").length) {
+      $(".header-right-info__box").removeClass("active");
+    }
+  });
+  $(document).on("click", function (e) {
+    // Проверяем, находится ли клик вне header и header-burger
     if (!$(e.target).closest(".header-lang").length) {
       $(".header-lang").removeClass("active");
+    }
+  });
+  $(document).on("click", function (e) {
+    // Проверяем, находится ли клик вне header и header-burger
+    if (!$(e.target).closest("header").length) {
+      $(".header-burger,.header-left__nav,.header-mob-box").removeClass(
+        "active"
+      );
     }
   });
   if ($(window).width() > 1200 && $(window).height() > 850) {
@@ -99,4 +119,50 @@ $(document).ready(function () {
       });
     }
   }
+  function moveElementsForMobile() {
+    if ($(window).width() < 768) {
+      // Проверяем, есть ли уже этот контейнер, чтобы не создавать дубликатов
+      if ($(".mobile-box-menu").length === 0) {
+        // Создаем новый контейнер
+        var $mobileBoxMenu = $("<div>", { class: "mobile-box-menu" });
+
+        // Перемещаем нужные элементы в новый контейнер
+        $mobileBoxMenu.append($(".header-right-info__box"));
+        $mobileBoxMenu.append($(".header-lang"));
+        $mobileBoxMenu.append($(".header-right__main a"));
+
+        // Добавляем новый контейнер в нужное место DOM-дерева, например, в .header-right
+        $(".header-right").append($mobileBoxMenu);
+        var headerMobBox = $('<div class="header-mob-box"></div>');
+
+        // Помещаем этот новый блок внутрь .header__wrapper
+        $(".header__wrapper").append(headerMobBox);
+
+        // Перемещаем .header-left__nav внутрь .header-mob-box
+        $(".header-left__nav").appendTo(headerMobBox);
+
+        // После .header-left__nav добавляем .mobile-box-menu
+        $(".mobile-box-menu").insertAfter(".header-left__nav");
+      }
+    } else {
+      // Если экран больше 768, возвращаем элементы на место (по желанию)
+      if ($(".mobile-box-menu").length > 0) {
+        // Возвращаем элементы на исходные места
+        $(".header-right").append($(".header-right-info__box"));
+        $(".header-right").append($(".header-lang"));
+        $(".header-right__main").append($(".header-right__main a"));
+
+        // Удаляем контейнер
+        $(".mobile-box-menu").remove();
+      }
+    }
+  }
+
+  // Вызываем функцию при загрузке страницы
+  moveElementsForMobile();
+
+  // Отслеживаем изменение размера окна
+  $(window).resize(function () {
+    moveElementsForMobile();
+  });
 });
