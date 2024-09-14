@@ -20,6 +20,38 @@ $(document).ready(function () {
       $(".header-lang").removeClass("active");
     }
   });
+  if (window.matchMedia("(max-width: 1750px)").matches) {
+    $(".species-list__item--line").remove();
+    $(".species__list").owlCarousel({
+      loop: false, // Зацикливать карусель
+      margin: 10, // Отступ между слайдами
+      nav: true, // Показать навигационные стрелки
+      responsive: {
+        0: {
+          items: 1, // Количество слайдов для маленьких экранов
+        },
+        576: {
+          items: 2, // Количество слайдов для маленьких экранов
+        },
+        768: {
+          items: 3, // Количество слайдов для средних экранов
+        },
+        992: {
+          items: 3, // Количество слайдов для средних экранов
+        },
+        1200: {
+          items: 2, // Количество слайдов для экранов побольше
+        },
+        1400: {
+          items: 3, // Количество слайдов для экранов побольше
+        },
+        1750: {
+          items: 3, // Количество слайдов для экранов шире 1750px
+        },
+      },
+    });
+  }
+
   $(document).on("click", function (e) {
     // Проверяем, находится ли клик вне header и header-burger
     if (!$(e.target).closest("header").length) {
@@ -28,6 +60,7 @@ $(document).ready(function () {
       );
     }
   });
+
   if ($(window).width() > 1200 && $(window).height() > 850) {
     var sections = new Swiper(".sections", {
       direction: "vertical",
@@ -59,7 +92,7 @@ $(document).ready(function () {
               .find(".animate")
               .addClass("animate--show");
           }, 300);
-          updatePagination(this.activeIndex); // Используем this, чтобы обратиться к объекту Swiper
+          updatePagination(this.activeIndex);
         },
         slideChangeTransitionStart: function () {
           $(".sections .section").find(".animate").removeClass("animate--show");
@@ -72,8 +105,7 @@ $(document).ready(function () {
           let section_id = $(".sections .section")
             .eq(this.activeIndex)
             .attr("data-slide-name");
-          //window.location.hash = section_id;
-          updatePagination(this.activeIndex); // Используем this, чтобы обратиться к объекту Swiper
+          updatePagination(this.activeIndex);
         },
       },
     });
@@ -90,13 +122,17 @@ $(document).ready(function () {
       sections.slideTo(index);
     });
 
-    $(".features__content-item").hover(
+    // Отключение прокрутки основного слайдера при наведении на news-slider, если ширина экрана меньше 1750px
+    $(".news-slider").hover(
       function () {
-        if ($(this).prop("scrollHeight") > $(this).prop("clientHeight"))
-          sections.mousewheel.disable();
+        if ($(window).width() < 1750) {
+          sections.mousewheel.disable(); // Отключаем прокрутку при наведении на news-slider, если ширина < 1750px
+        }
       },
       function () {
-        sections.mousewheel.enable();
+        if ($(window).width() < 1750) {
+          sections.mousewheel.enable(); // Включаем прокрутку, когда курсор уходит с news-slider, если ширина < 1750px
+        }
       }
     );
   } else {
@@ -119,6 +155,69 @@ $(document).ready(function () {
       });
     }
   }
+  var syncing = false; // Флаг для предотвращения зацикливания синхронизации
+
+  // Инициализация основного слайдера
+  var mainSlider = $(".start__slider").owlCarousel({
+    loop: false,
+    items: 1,
+    nav: true,
+    dots: false, // Отключаем стандартные точки Owl
+    onTranslate: syncPositionWithDots, // Синхронизация при смене слайда
+  });
+
+  var mainSlider2 = $(".news-slider").owlCarousel({
+    loop: false,
+    items: 1,
+    nav: true,
+    dots: false, // Отключаем стандартные точки Owl
+    onTranslate: syncPositionWithDots2, // Синхронизация при смене слайда
+  });
+  function syncPositionWithDots2(event) {
+    var currentIndex = event.item.index; // Получаем текущий индекс слайда
+
+    // Убираем класс active у всех точек
+    $(".news-slider-dot").removeClass("active");
+
+    // Добавляем класс active к точке, соответствующей текущему слайду
+    $(".news-slider-dot").eq(currentIndex).addClass("active");
+  }
+
+  // При клике на точки
+  $(".start-slder-dots__item").on("click", function () {
+    // Убираем класс active у всех элементов
+    $(".start-slder-dots__item").removeClass("active");
+
+    // Добавляем класс active к текущему элементу
+    $(this).addClass("active");
+
+    // Переходим на соответствующий слайд
+    var index = $(this).index();
+    mainSlider.trigger("to.owl.carousel", [index, 300]); // Переход к слайду
+  });
+  $(".news-slider-dot").on("click", function () {
+    // Убираем класс active у всех элементов
+    $(".news-slider-dot").removeClass("active");
+
+    // Добавляем класс active к текущему элементу
+    $(this).addClass("active");
+
+    // Переходим на соответствующий слайд
+    var index = $(this).index();
+    mainSlider2.trigger("to.owl.carousel", [index, 300]); // Переход к слайду
+  });
+
+  // Функция синхронизации слайдов с точками
+  function syncPositionWithDots(event) {
+    var currentIndex = event.item.index; // Получаем текущий индекс слайда
+
+    // Убираем класс active у всех точек
+    $(".start-slder-dots__item").removeClass("active");
+
+    // Добавляем класс active к точке, соответствующей текущему слайду
+    $(".start-slder-dots__item").eq(currentIndex).addClass("active");
+  }
+
   function moveElementsForMobile() {
     if ($(window).width() < 768) {
       // Проверяем, есть ли уже этот контейнер, чтобы не создавать дубликатов
