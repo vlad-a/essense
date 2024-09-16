@@ -398,6 +398,10 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: 250ms ease all;
+}
+.btn:hover {
+  transform: scale(1.05);
 }
 .btn__text {
   text-shadow: 0 2px 4px #243a63;
@@ -410,7 +414,7 @@ section {
 .species,
 .start,
 .news {
-  background: url(../img/preview-back.png) no-repeat center center;
+  background: url(../img/preview-back.jpg) no-repeat center center;
   background-size: cover;
   height: 100vh;
   display: flex;
@@ -428,15 +432,15 @@ section {
   text-align: center;
 }
 .species {
-  background: url(../img/species-back.png) no-repeat center center;
+  background: url(../img/species-back.jpg) no-repeat -335px center;
   background-size: cover;
 }
 .start {
-  background: url(../img/species-back.png) no-repeat center center;
+  background: url(../img/species-back.jpg) no-repeat center center;
   background-size: cover;
 }
 .news {
-  background: url(../img/news-back.png) no-repeat center center;
+  background: url(../img/news-back.jpg) no-repeat center center;
   background-size: cover;
 }
 .preview-text__title {
@@ -471,7 +475,7 @@ section {
   background: linear-gradient(to bottom, transparent, #baa98b78, transparent);
 }
 .preview-text__back {
-  background: url(../img/preview-text-back.png) no-repeat center center;
+  background: linear-gradient(to bottom, #152a4b7d, transparent);
   background-size: cover;
   width: 716px;
   height: 149px;
@@ -660,7 +664,7 @@ section {
   line-height: 30px;
 }
 .start {
-  background: url(../img/start-back.png) no-repeat center center;
+  background: url(../img/start-back.jpg) no-repeat center center;
   background-size: cover;
 }
 .btn.preview-btn.start-btn {
