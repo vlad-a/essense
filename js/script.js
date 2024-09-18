@@ -111,10 +111,21 @@ $(document).ready(function () {
     });
 
     function updatePagination(activeIndex) {
+      // Убираем активный класс со всех элементов
       $(".section-list__item").removeClass("swiper-pagination-bullet-active");
-      $(`.section-list__item[data-slide-index="${activeIndex}"]`).addClass(
-        "swiper-pagination-bullet-active"
+
+      // Находим все элементы, которые не имеют класс "section-nav-list__item--disabled"
+      var validItems = $(".section-list__item").not(
+        ".section-nav-list__item--disabled"
       );
+
+      // Находим активный элемент на основе индекса
+      var activeItem = validItems.filter(`[data-slide-index="${activeIndex}"]`);
+
+      // Добавляем активный класс, если элемент не disabled
+      if (activeItem.length) {
+        activeItem.addClass("swiper-pagination-bullet-active");
+      }
     }
 
     $(".section-list__item").on("click", function () {
