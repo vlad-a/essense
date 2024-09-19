@@ -20,6 +20,22 @@ $(document).ready(function () {
       $(".header-lang").removeClass("active");
     }
   });
+  function movePromoSocs() {
+    if ($(window).width() < 1200) {
+      $(".promo__socs").appendTo(".prome-cyclone-box");
+    } else {
+      // Опционально, если нужно вернуть на место при большом экране
+      // $('.promo__socs').appendTo('.original-parent-selector');
+    }
+  }
+
+  // Проверяем при загрузке страницы
+  movePromoSocs();
+
+  // Проверяем при изменении размера окна
+  $(window).resize(function () {
+    movePromoSocs();
+  });
   if (window.matchMedia("(max-width: 1750px)").matches) {
     $(".species-list__item--line").remove();
     $(".species__list").owlCarousel({
@@ -51,6 +67,112 @@ $(document).ready(function () {
       },
     });
   }
+  class gw_timeUpdate {
+    constructor(el, date, startIn, lifeTime, tz) {
+      this.el = el;
+      this.startTime = luxon.DateTime.fromSQL(date, { zone: tz });
+      this.tz = tz;
+      this.startIn = startIn || "Start in";
+      this.lifeTime = lifeTime || "Life time";
+    }
+
+    update() {
+      let dateNow = luxon.DateTime.now().setZone(this.tz);
+      let comming = this.startTime < dateNow;
+
+      let obj = this.startTime
+        .diff(dateNow, ["days", "hours", "minutes", "seconds"])
+        .toObject();
+      let days = Math.abs(Math.floor(obj.days));
+      let hours = Math.abs(Math.floor(obj.hours));
+      let minutes = Math.abs(Math.floor(obj.minutes));
+      let seconds = Math.abs(Math.floor(obj.seconds));
+      let title = comming ? this.lifeTime : this.startIn;
+
+      let html = `
+        <div class="countdown">
+            <div class="countdown__counter">
+                <div class="gw-timer">
+                    <div class="gw-timer__item">
+                        <div class="gw-timer__amount">${days}</div>
+                        <div class="gw-timer__desc">${numDecline(
+                          days,
+                          __config.timer.dd[0]
+                        )}</div>
+                    </div>
+										
+                    <div class="gw-timer__item">
+                        <div class="gw-timer__amount">${String(hours).padStart(
+                          2,
+                          "0"
+                        )}</div>
+                        <div class="gw-timer__desc">${numDecline(
+                          hours,
+                          __config.timer.dd[1]
+                        )}</div>
+                    </div>
+										
+                    <div class="gw-timer__item">
+                        <div class="gw-timer__amount">${String(
+                          minutes
+                        ).padStart(2, "0")}</div>
+                        <div class="gw-timer__desc">${numDecline(
+                          minutes,
+                          __config.timer.dd[2]
+                        )}</div>
+                    </div>
+											
+											<div class="gw-timer__item">
+                        <div class="gw-timer__amount">${String(
+                          seconds
+                        ).padStart(2, "0")}</div>
+                        <div class="gw-timer__desc">${numDecline(
+                          seconds,
+                          __config.timer.dd[2]
+                        )}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+      this.el.html(html);
+    }
+  }
+
+  function numDecline(n, titles) {
+    return titles[
+      1 === n % 10 && 11 !== n % 100
+        ? 0
+        : 2 <= n % 10 && 4 >= n % 10 && (10 > n % 100 || 20 <= n % 100)
+        ? 1
+        : 2
+    ];
+  }
+
+  $("[data-timer-start-time]").each(function (index, element) {
+    const __this = $(this);
+    console.log("Initializing timer for element:", __this);
+    let timeREnder = new gw_timeUpdate(
+      __this,
+      __this.attr("data-timer-start-time"),
+      __this.attr("data-timer-before"),
+      __this.attr("data-timer-after"),
+      __this.attr("data-timer-time-zone")
+    );
+    let update = function () {
+      timeREnder.update();
+      setTimeout(() => {
+        update();
+      }, 1000);
+    };
+    update();
+  });
+  var $round = $(".round"),
+    roundRadius = $round.find("circle").attr("r"),
+    roundPercent = $round.data("percent"),
+    roundCircum = 2 * roundRadius * Math.PI,
+    roundDraw = (roundPercent * roundCircum) / 100;
+  $round.css("stroke-dasharray", roundDraw + " 999");
 
   $(document).on("click", function (e) {
     // Проверяем, находится ли клик вне header и header-burger
