@@ -128,7 +128,7 @@ $(document).ready(function () {
                         ).padStart(2, "0")}</div>
                         <div class="gw-timer__desc">${numDecline(
                           seconds,
-                          __config.timer.dd[2]
+                          __config.timer.dd[3]
                         )}</div>
                     </div>
                 </div>
