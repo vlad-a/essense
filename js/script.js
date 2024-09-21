@@ -183,7 +183,7 @@ $(document).ready(function () {
     }
   });
 
-  if ($(window).width() > 1200 && $(window).height() > 850) {
+  if ($(window).width() > 1200 && $(window).height() > 1000) {
     var sections = new Swiper(".sections", {
       direction: "vertical",
       slidesPerView: 1,
