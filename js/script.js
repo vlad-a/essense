@@ -67,6 +67,20 @@ $(document).ready(function () {
       },
     });
   }
+  function updateHeight() {
+    $(".gw-timer__item").each(function () {
+      var width = $(this).width(); // Получаем ширину элемента
+      $(this).height(width); // Устанавливаем эту ширину как высоту
+    });
+  }
+
+  // Запускаем функцию при загрузке страницы
+  updateHeight();
+
+  // Запускаем функцию при изменении размера окна
+  $(window).resize(function () {
+    updateHeight();
+  });
   class gw_timeUpdate {
     constructor(el, date, startIn, lifeTime, tz) {
       this.el = el;
@@ -77,64 +91,47 @@ $(document).ready(function () {
     }
 
     update() {
-      let dateNow = luxon.DateTime.now().setZone(this.tz);
-      let comming = this.startTime < dateNow;
+      // Здесь мы отключаем динамическое обновление времени.
+      // Устанавливаем фиксированные значения времени для отображения в таймере.
+      let days = 0; // Можно задать фиксированные значения, если необходимо.
+      let hours = 0;
+      let minutes = 0;
+      let seconds = 0;
 
-      let obj = this.startTime
-        .diff(dateNow, ["days", "hours", "minutes", "seconds"])
-        .toObject();
-      let days = Math.abs(Math.floor(obj.days));
-      let hours = Math.abs(Math.floor(obj.hours));
-      let minutes = Math.abs(Math.floor(obj.minutes));
-      let seconds = Math.abs(Math.floor(obj.seconds));
-      let title = comming ? this.lifeTime : this.startIn;
+      // Устанавливаем заголовок
+      let title = this.startIn; // или this.lifeTime, в зависимости от ситуации
 
+      // Генерация статического HTML
       let html = `
-        <div class="countdown">
-            <div class="countdown__counter">
-                <div class="gw-timer">
-                    <div class="gw-timer__item">
-                        <div class="gw-timer__amount">${days}</div>
-                        <div class="gw-timer__desc">${numDecline(
-                          days,
-                          __config.timer.dd[0]
-                        )}</div>
-                    </div>
+				<div class="countdown">
+						<div class="countdown__counter">
+								<div class="gw-timer">
+										<div class="gw-timer__item">
+										  <div class="gw-timer__item-inner">
+												<div class="gw-timer__amount">${days}</div>
+												<div class="gw-timer__desc">${numDecline(days, __config.timer.dd[0])}</div>
+											</div></div>
 										
-                    <div class="gw-timer__item">
-                        <div class="gw-timer__amount">${String(hours).padStart(
-                          2,
-                          "0"
-                        )}</div>
-                        <div class="gw-timer__desc">${numDecline(
-                          hours,
-                          __config.timer.dd[1]
-                        )}</div>
-                    </div>
+										<div class="gw-timer__item">
+												<div class="gw-timer__amount">${String(hours).padStart(2, "0")}</div>
+												<div class="gw-timer__desc">${numDecline(hours, __config.timer.dd[1])}</div>
+										</div>
 										
-                    <div class="gw-timer__item">
-                        <div class="gw-timer__amount">${String(
-                          minutes
-                        ).padStart(2, "0")}</div>
-                        <div class="gw-timer__desc">${numDecline(
-                          minutes,
-                          __config.timer.dd[2]
-                        )}</div>
-                    </div>
-											
-											<div class="gw-timer__item">
-                        <div class="gw-timer__amount">${String(
-                          seconds
-                        ).padStart(2, "0")}</div>
-                        <div class="gw-timer__desc">${numDecline(
-                          seconds,
-                          __config.timer.dd[3]
-                        )}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
+										<div class="gw-timer__item">
+												<div class="gw-timer__amount">${String(minutes).padStart(2, "0")}</div>
+												<div class="gw-timer__desc">${numDecline(minutes, __config.timer.dd[2])}</div>
+										</div>
+										
+										<div class="gw-timer__item">
+												<div class="gw-timer__amount">${String(seconds).padStart(2, "0")}</div>
+												<div class="gw-timer__desc">${numDecline(seconds, __config.timer.dd[3])}</div>
+										</div>
+								</div>
+						</div>
+				</div>
+			`;
+
+      // Рендерим статичный HTML код без обновления таймера
       this.el.html(html);
     }
   }
@@ -183,7 +180,7 @@ $(document).ready(function () {
     }
   });
 
-  if ($(window).width() > 1200 && $(window).height() > 1000) {
+  if ($(window).width() > 1200) {
     var sections = new Swiper(".sections", {
       direction: "vertical",
       slidesPerView: 1,
@@ -288,6 +285,35 @@ $(document).ready(function () {
       });
     }
   }
+  $(".section-nav-list__item").on("click", function () {
+    const index = $(this).data("slide-index");
+    const targetSection = $("section").eq(index); // Предполагаем, что каждая секция имеет тег <section> и расположена в порядке
+    $("html, body").animate(
+      {
+        scrollTop: targetSection.offset().top,
+      },
+      800
+    ); // Время анимации
+  });
+
+  // Отслеживание скролла и добавление класса 'active' к соответствующему пункту меню
+  $(window).on("scroll", function () {
+    let scrollPosition = $(window).scrollTop();
+
+    $("section").each(function (index) {
+      const sectionTop = $(this).offset().top - 100; // Отступ для точного срабатывания
+      const sectionBottom = sectionTop + $(this).outerHeight();
+
+      if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+        $(".section-nav-list__item").removeClass(
+          "swiper-pagination-bullet-active"
+        );
+        $(".section-nav-list__item")
+          .eq(index)
+          .addClass("swiper-pagination-bullet-active");
+      }
+    });
+  });
   var syncing = false; // Флаг для предотвращения зацикливания синхронизации
 
   // Инициализация основного слайдера
