@@ -54,7 +54,10 @@ input:focus::placeholder {
 body {
   height: fit-content;
   width: 100%;
-  font-size: max((min(100vh, 100vw) - var(--page-nav-height)) / 100 * 1, 13px);
+  font-size: max(
+    (min(100vh, 100vw) - var(--page-nav-height)) / 100 * 1.8,
+    13px
+  );
   color: #fff;
   background: #11264a;
   line-height: 1.1;
@@ -1396,7 +1399,11 @@ section {
 .slider-start-main {
   max-width: 900px;
 }
-
+@media screen and (min-height: 1250px) {
+  .btn.preview-btn .btn__text {
+    font-size: 1.488em;
+  }
+}
 .start__slider .owl-dots {
   justify-content: center;
   width: fit-content;
@@ -1892,12 +1899,6 @@ section {
     text-wrap: nowrap;
     overflow-y: hidden;
     padding: 20px;
-  }
-  body {
-    font-size: max(
-      (min(100vh, 100vw) - var(--page-nav-height)) / 100 * 1,
-      10px
-    );
   }
 }
 @media screen and (max-width: 1200px) {
