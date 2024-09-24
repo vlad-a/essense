@@ -68,7 +68,7 @@ $(document).ready(function () {
     });
   }
   function updateHeight() {
-    $(".gw-timer__item").each(function () {
+    $(".gw-timer__item, .start-slder-dots__item").each(function () {
       var width = $(this).width(); // Получаем ширину элемента
       $(this).height(width); // Устанавливаем эту ширину как высоту
     });
