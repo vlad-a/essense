@@ -68,7 +68,7 @@ $(document).ready(function () {
     });
   }
   function updateHeight() {
-    $(".gw-timer__item, .start-slder-dots__item").each(function () {
+    $(" .start-slder-dots__item").each(function () {
       var width = $(this).width(); // Получаем ширину элемента
       $(this).height(width); // Устанавливаем эту ширину как высоту
     });
@@ -91,47 +91,64 @@ $(document).ready(function () {
     }
 
     update() {
-      // Здесь мы отключаем динамическое обновление времени.
-      // Устанавливаем фиксированные значения времени для отображения в таймере.
-      let days = 0; // Можно задать фиксированные значения, если необходимо.
-      let hours = 0;
-      let minutes = 0;
-      let seconds = 0;
+      let dateNow = luxon.DateTime.now().setZone(this.tz);
+      let comming = this.startTime < dateNow;
 
-      // Устанавливаем заголовок
-      let title = this.startIn; // или this.lifeTime, в зависимости от ситуации
+      let obj = this.startTime
+        .diff(dateNow, ["days", "hours", "minutes", "seconds"])
+        .toObject();
+      let days = Math.abs(Math.floor(obj.days));
+      let hours = Math.abs(Math.floor(obj.hours));
+      let minutes = Math.abs(Math.floor(obj.minutes));
+      let seconds = Math.abs(Math.floor(obj.seconds));
+      let title = comming ? this.lifeTime : this.startIn;
 
-      // Генерация статического HTML
       let html = `
-				<div class="countdown">
-						<div class="countdown__counter">
-								<div class="gw-timer">
-										<div class="gw-timer__item">
-										  <div class="gw-timer__item-inner">
-												<div class="gw-timer__amount">${days}</div>
-												<div class="gw-timer__desc">${numDecline(days, __config.timer.dd[0])}</div>
-											</div></div>
+        <div class="countdown">
+            <div class="countdown__counter">
+                <div class="gw-timer">
+                    <div class="gw-timer__item">
+                        <div class="gw-timer__amount">${days}</div>
+                        <div class="gw-timer__desc">${numDecline(
+                          days,
+                          __config.timer.dd[0]
+                        )}</div>
+                    </div>
 										
-										<div class="gw-timer__item">
-												<div class="gw-timer__amount">${String(hours).padStart(2, "0")}</div>
-												<div class="gw-timer__desc">${numDecline(hours, __config.timer.dd[1])}</div>
-										</div>
+                    <div class="gw-timer__item">
+                        <div class="gw-timer__amount">${String(hours).padStart(
+                          2,
+                          "0"
+                        )}</div>
+                        <div class="gw-timer__desc">${numDecline(
+                          hours,
+                          __config.timer.dd[1]
+                        )}</div>
+                    </div>
 										
-										<div class="gw-timer__item">
-												<div class="gw-timer__amount">${String(minutes).padStart(2, "0")}</div>
-												<div class="gw-timer__desc">${numDecline(minutes, __config.timer.dd[2])}</div>
-										</div>
-										
-										<div class="gw-timer__item">
-												<div class="gw-timer__amount">${String(seconds).padStart(2, "0")}</div>
-												<div class="gw-timer__desc">${numDecline(seconds, __config.timer.dd[3])}</div>
-										</div>
-								</div>
-						</div>
-				</div>
-			`;
-
-      // Рендерим статичный HTML код без обновления таймера
+                    <div class="gw-timer__item">
+                        <div class="gw-timer__amount">${String(
+                          minutes
+                        ).padStart(2, "0")}</div>
+                        <div class="gw-timer__desc">${numDecline(
+                          minutes,
+                          __config.timer.dd[2]
+                        )}</div>
+                    </div>
+											
+											<div class="gw-timer__item">
+                        <div class="gw-timer__amount">${String(
+                          seconds
+                        ).padStart(2, "0")}</div>
+                        <div class="gw-timer__desc">${numDecline(
+                          seconds,
+                          __config.timer.dd[2]
+                        )}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
       this.el.html(html);
     }
   }
